@@ -386,17 +386,7 @@
 
                         <!-- STAMPS CONTAINER -->
                         <div class="flex items-center space-y-0 space-x-2">
-                            <!-- Stamp 1: Secret Heart Triggerable Stamp -->
-                            <div onclick="triggerHeartSecret()" class="group cursor-pointer relative transform transition-all hover:scale-105 active:scale-95" title="Tap for a tiny secret message!">
-                                <!-- Perforated edges effect -->
-                                <div class="w-12 h-12 md:w-16 md:h-16 bg-[#faf3dd] border-2 border-dashed border-[#d2ab72] rounded p-1 flex items-center justify-center relative shadow-md">
-                                    <div class="w-full h-full bg-[#fae1dd] rounded border border-pink-200 flex flex-col justify-center items-center text-center">
-                                        <span class="text-rose-500 text-sm md:text-lg group-hover:scale-125 transition-transform duration-300">❤️</span>
-                                        <span class="text-[6px] md:text-[7px] uppercase tracking-tighter text-[#5c4a3c] font-bold mt-0.5">CLICK ME</span>
-                                    </div>
-                                </div>
-                                <div class="absolute -top-1 -right-1 bg-red-400 text-white rounded-full w-3.5 h-3.5 text-[8px] flex items-center justify-center animate-bounce shadow">1</div>
-                            </div>
+                            <!-- Removed secret reminder stamp -->
                         </div>
                     </div>
 
@@ -440,26 +430,6 @@
         </section>
 
     </main>
-
-    <!-- Custom secret Heart Sticker Message Box Popup -->
-    <div id="secret-heart-popup" class="fixed inset-0 bg-[#35251a]/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4 transition-all duration-300">
-        <div class="bg-[#fcfaf5] rounded-2xl max-w-xs sm:max-w-sm w-full p-6 border-4 border-[#e1d5c9] shadow-2xl text-center transform scale-95 transition-transform duration-300 relative">
-            <!-- Decorative corner elements -->
-            <div class="absolute -top-3 -left-3 text-xl">✨</div>
-            <div class="absolute -bottom-3 -right-3 text-xl">✨</div>
-            
-            <span class="text-3xl inline-block animate-bounce mb-2">💫</span>
-            <h4 class="font-['EB_Garamond'] text-xl md:text-2xl font-bold text-[#4a3b2c] italic mb-2">A Secret Reminder:</h4>
-            
-            <p class="font-['Caveat'] text-xl md:text-2xl text-[#5c4a3c] leading-relaxed my-3">
-                "You are much smarter than you think. Do not doubt yourself for a single second. I believe in you!"
-            </p>
-
-            <button onclick="closeHeartSecret()" class="mt-2 px-5 py-2 bg-[#8c6b53] hover:bg-[#70543f] text-[#fbf9f4] font-bold rounded-xl transition-all shadow-md active:scale-95 text-xs md:text-sm">
-                I'll Remember That ❤️
-            </button>
-        </div>
-    </div>
 
     <!-- Footnotes footer page info -->
     <footer class="w-full text-center mt-6 text-[9px] md:text-[10px] font-['Courier_Prime'] text-[#8c6b53] tracking-widest uppercase z-10 px-4">
@@ -723,21 +693,6 @@
 
             // Emit massive beautiful sparkle shower
             burstSparkles(30);
-        }
-
-        // Heart trigger popups
-        function triggerHeartSecret() {
-            const popup = document.getElementById("secret-heart-popup");
-            popup.classList.remove("hidden");
-            popup.classList.add("flex");
-            // Gentle sparkle burst on opening
-            burstSparkles(12);
-        }
-
-        function closeHeartSecret() {
-            const popup = document.getElementById("secret-heart-popup");
-            popup.classList.add("hidden");
-            popup.classList.remove("flex");
         }
 
         // Custom Sparkles Particle Engine
