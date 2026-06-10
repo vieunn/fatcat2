@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Lavenders for You</title>
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --night: #07111e;
+            --mist: rgba(169, 131, 255, 0.12);
+            --stem: #7bb58a;
+            --leaf: #63a36f;
+            --lavender-dark: #6c4bd9;
+            --lavender-mid: #a575ff;
+            --lavender-light: #d6c2ff;
+            --lavender-glow: rgba(166, 122, 255, 0.42);
+            --soil: #0d1825;
+        }
+
+        body {
+            min-height: 100vh;
+            overflow: hidden;
+            display: grid;
+            place-items: end center;
+            background:
+                radial-gradient(circle at 50% 20%, rgba(112, 80, 226, 0.18), transparent 28%),
+                radial-gradient(circle at 20% 10%, rgba(88, 173, 255, 0.1), transparent 18%),
+                linear-gradient(to top, var(--soil) 0%, #09111d 28%, var(--night) 100%);
+            font-family: Arial, sans-serif;
+        }
+
+        .night {
+            position: fixed;
+            inset: 0;
+            background-image:
+                radial-gradient(circle at 12% 18%, rgba(130, 220, 255, 0.18) 0 0.15vmin, transparent 0.3vmin),
+                radial-gradient(circle at 28% 8%, rgba(190, 150, 255, 0.16) 0 0.15vmin, transparent 0.3vmin),
+                radial-gradient(circle at 48% 24%, rgba(190, 150, 255, 0.18) 0 0.18vmin, transparent 0.35vmin),
+                radial-gradient(circle at 68% 14%, rgba(130, 220, 255, 0.15) 0 0.12vmin, transparent 0.28vmin),
+                radial-gradient(circle at 82% 30%, rgba(190, 150, 255, 0.14) 0 0.16vmin, transparent 0.32vmin),
+                radial-gradient(circle at 18% 36%, rgba(130, 220, 255, 0.12) 0 0.12vmin, transparent 0.28vmin),
+                radial-gradient(circle at 90% 18%, rgba(130, 220, 255, 0.12) 0 0.12vmin, transparent 0.28vmin),
+                radial-gradient(circle at 38% 46%, rgba(190, 150, 255, 0.12) 0 0.12vmin, transparent 0.28vmin);
+            opacity: 0.9;
+            filter: blur(0.15vmin);
+            pointer-events: none;
+        }
+
+        .scene {
+            position: relative;
+            width: min(100vw, 1100px);
+            height: min(100vh, 900px);
+            transform: scale(0.95);
+        }
+
+        .ground {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: -2vmin;
+            height: 28vmin;
+            background: linear-gradient(to top, rgba(10, 20, 31, 0.95), rgba(10, 20, 31, 0.1));
+            filter: blur(0.4vmin);
+        }
+
+        .fireflies {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            mix-blend-mode: screen;
+        }
+
+        .firefly {
+            position: absolute;
+            left: var(--x, 50%);
+            top: var(--y, 50%);
+            width: 0.65vmin;
+            height: 0.65vmin;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 170, 0.96) 0%, rgba(255, 221, 90, 0.42) 40%, rgba(255, 221, 90, 0) 70%);
+            box-shadow: 0 0 1.75vmin rgba(255, 215, 120, 0.65);
+            transform: translate(-50%, -50%) translateX(0) translateY(0) scale(0.8);
+            opacity: 0;
+            animation:
+                firefly-glow var(--d, 4.5s) ease-in-out infinite var(--delay, 0s),
+                firefly-drift calc(var(--d, 4.5s) * 2) ease-in-out infinite var(--delay, 0s);
+        }
+
+        .sprig {
+            position: absolute;
+            bottom: 8vmin;
+            width: 14vmin;
+            height: var(--sprig-height, 58vmin);
+            transform-origin: bottom center;
+            animation: sway 5.5s ease-in-out infinite;
+        }
+
+        .sprig::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%);
+            width: 9vmin;
+            height: 28vmin;
+            background: radial-gradient(circle at 50% 0%, rgba(173, 94, 255, 0.22), transparent 60%);
+            filter: blur(1.8vmin);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .sprig--1 { left: 10%; transform: rotate(-4deg); animation-duration: 5.2s; }
+        .sprig--2 { left: 26%; transform: rotate(1deg); animation-duration: 5.8s; }
+        .sprig--3 { left: 41%; transform: rotate(-2deg); animation-duration: 6.1s; }
+        .sprig--4 { left: 56%; transform: rotate(3deg); animation-duration: 5.4s; }
+        .sprig--5 { left: 72%; transform: rotate(-1deg); animation-duration: 6s; }
+        .sprig--6 { left: 86%; transform: rotate(2deg); animation-duration: 5.6s; }
+        .sprig--7 { left: 4%; transform: rotate(-6deg); animation-duration: 5.7s; }
+        .sprig--8 { left: 92%; transform: rotate(5deg); animation-duration: 5.7s; }
+        .sprig--9 { left: 18%; transform: rotate(-2deg); animation-duration: 5.4s; }
+        .sprig--10 { left: 34%; transform: rotate(2deg); animation-duration: 5.9s; }
+        .sprig--11 { left: 62%; transform: rotate(-3deg); animation-duration: 5.6s; }
+        .sprig--12 { left: 78%; transform: rotate(1deg); animation-duration: 5.8s; }
+
+        .stem {
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%) scaleY(1);
+            width: 1.15vmin;
+            height: 100%;
+            transform-origin: bottom center;
+            border-radius: 999px;
+            background: linear-gradient(to right, rgba(255,255,255,0.08), rgba(255,255,255,0.02) 22%, rgba(0,0,0,0.25) 45%), linear-gradient(to top, #4f7e5c, var(--stem) 45%, #95c48c);
+            box-shadow: 0 0 2.5vmin rgba(123, 181, 138, 0.2);
+            animation: grow 3.8s ease-out backwards;
+            z-index: 2;
+        }
+
+        .stem::before,
+        .stem::after {
+            content: "";
+            position: absolute;
+            width: 8vmin;
+            height: 4.5vmin;
+            border-top-left-radius: 100% 100%;
+            border-top-right-radius: 100% 100%;
+            border-bottom-left-radius: 80% 100%;
+            background: linear-gradient(to top, rgba(80, 132, 92, 0.15), rgba(99, 163, 111, 0.95));
+            filter: saturate(1.1);
+            opacity: 0.9;
+        }
+
+        .stem::before {
+            left: 0.4vmin;
+            top: 26vmin;
+            transform: rotate(22deg);
+            transform-origin: left center;
+        }
+
+        .stem::after {
+            right: 0.2vmin;
+            top: 38vmin;
+            transform: rotate(-18deg);
+            transform-origin: right center;
+        }
+
+        .panicle {
+            position: absolute;
+            left: 50%;
+            top: -2vmin;
+            transform: translateX(-50%);
+            width: 13vmin;
+            height: 36vmin;
+            z-index: 4;
+            animation: bloom 1.8s ease-out backwards;
+        }
+
+        .panicle::before {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 42%;
+            transform: translate(-50%, -50%);
+            width: 14vmin;
+            height: 32vmin;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(214, 194, 255, 0.94), rgba(214, 194, 255, 0.3) 48%, transparent 72%);
+            filter: blur(2vmin);
+            opacity: 0.9;
+            pointer-events: none;
+        }
+
+        .panicle::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 22%;
+            transform: translate(-50%, -35%);
+            width: 8vmin;
+            height: 8vmin;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(223, 169, 255, 0.85), rgba(136, 72, 255, 0.16) 60%, transparent 82%);
+            filter: blur(0.9vmin);
+            z-index: 5;
+            pointer-events: none;
+            animation: bloomGlow 4.2s ease-in-out infinite;
+        }
+
+        .flower-top {
+            position: absolute;
+            left: 50%;
+            top: -1.6vmin;
+            transform: translateX(-50%);
+            width: 5.5vmin;
+            height: 5.5vmin;
+            border-radius: 50%;
+            background: radial-gradient(circle, #fff8ff 0 16%, #e3d7ff 20%, #b088ff 38%, #7a52df 68%, #5630b2 100%);
+            box-shadow: 0 0 3vmin rgba(166, 122, 255, 0.55);
+            z-index: 3;
+        }
+
+        .bud {
+            position: absolute;
+            left: 50%;
+            top: var(--y, 0%);
+            width: var(--w, 1.05vmin);
+            height: var(--h, 2.3vmin);
+            border-radius: 999px;
+            background: linear-gradient(to bottom, #f2e6ff, #b491ff 38%, #6440c2 100%);
+            box-shadow: 0 0 1.25vmin rgba(170, 100, 255, 0.24);
+            transform: translateX(-50%) rotate(var(--r, 0deg));
+            transform-origin: center bottom;
+        }
+
+        .bud.cluster {
+            width: 1.3vmin;
+            height: 1.3vmin;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #fbf1ff, #c69eff 48%, #6f4ddd 100%);
+            box-shadow: 0 0 1.35vmin rgba(180, 110, 255, 0.24);
+        }
+
+        .bud::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: linear-gradient(to top, rgba(255,255,255,0.4), transparent 55%);
+            opacity: 0.45;
+        }
+
+        .bud.cluster {
+            width: 1.1vmin;
+            height: 1.1vmin;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #faf0ff, #c49eff 48%, #6f4ddd 100%);
+            box-shadow: 0 0 1.4vmin rgba(175, 110, 255, 0.22);
+        }
+
+        .flower-top {
+            position: absolute;
+            left: 50%;
+            top: -1.6vmin;
+            transform: translateX(-50%);
+            width: 5.5vmin;
+            height: 5.5vmin;
+            border-radius: 50%;
+            background: radial-gradient(circle, #fff8ff 0 16%, #e3d7ff 20%, #b088ff 38%, #7a52df 68%, #5630b2 100%);
+            box-shadow: 0 0 3vmin rgba(166, 122, 255, 0.55);
+        }
+
+        .leaf {
+            position: absolute;
+            width: 9vmin;
+            height: 5vmin;
+            bottom: 20vmin;
+            border-radius: 0 100% 0 100%;
+            background: linear-gradient(to top, rgba(40, 92, 53, 0.2), rgba(99, 163, 111, 0.95));
+            filter: saturate(1.05);
+            opacity: 0.95;
+        }
+
+        .leaf.left { left: -1.5vmin; transform: rotate(28deg); }
+        .leaf.right { right: -1.5vmin; transform: rotate(-28deg) scaleX(-1); }
+
+        .bush {
+            position: absolute;
+            bottom: 4vmin;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(100%, 1100px);
+            height: 34vmin;
+            pointer-events: none;
+        }
+
+
+        .grass {
+            position: absolute;
+            bottom: 0;
+            width: 18vmin;
+            height: 42vmin;
+            border-top-left-radius: 100%;
+            border-left: 1.8vmin solid #2ca43a;
+            transform-origin: bottom center;
+            -webkit-mask-image: linear-gradient(to top, transparent 20%, #09111d);
+            mask-image: linear-gradient(to top, transparent 20%, #09111d);
+            opacity: 0.9;
+            animation: grass-sway 4.2s ease-in-out infinite;
+        }
+
+        .grass.g1 { left: 5%; }
+        .grass.g2 { left: 18%; transform: scale(0.9) rotate(4deg); }
+        .grass.g3 { left: 33%; transform: scale(1.05) rotate(-2deg); }
+        .grass.g4 { left: 64%; transform: scale(0.95) rotate(3deg); }
+        .grass.g5 { left: 80%; transform: scale(1.02) rotate(-1deg); }
+        .grass.g6 { left: 12%; transform: scale(0.92) rotate(4deg); }
+        .grass.g7 { left: 50%; transform: scale(0.98) rotate(-2deg); }
+        .grass.g8 { left: 92%; transform: scale(0.9) rotate(3deg); }
+
+        .caption {
+            position: fixed;
+            left: 50%;
+            bottom: max(1rem, env(safe-area-inset-bottom));
+            transform: translateX(-50%);
+            z-index: 20;
+            color: rgba(245, 238, 255, 0.82);
+            font-size: 0.95rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            text-align: center;
+            text-shadow: 0 0 24px rgba(166, 122, 255, 0.25);
+        }
+
+        .return-link {
+            position: fixed;
+            top: max(1rem, env(safe-area-inset-top));
+            left: max(1rem, env(safe-area-inset-left));
+            z-index: 20;
+            padding: 0.75rem 1rem;
+            border-radius: 999px;
+            text-decoration: none;
+            color: #f7f2ff;
+            background: rgba(20, 20, 36, 0.72);
+            border: 1px solid rgba(214, 194, 255, 0.26);
+            backdrop-filter: blur(14px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.32);
+        }
+
+        .not-loaded * {
+            animation-play-state: paused !important;
+        }
+
+        @keyframes grow {
+            from {
+                transform: translateX(-50%) scaleY(0);
+            }
+        }
+
+        @keyframes bloom {
+            from {
+                transform: translateX(-50%) scale(0);
+                opacity: 0;
+            }
+        }
+
+        @keyframes bloomGlow {
+            0%, 100% {
+                transform: translate(-50%, -35%) scale(0.92);
+                opacity: 0.65;
+            }
+            50% {
+                transform: translate(-50%, -35%) scale(1.1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes sway {
+            0%, 100% { transform: translateX(0) rotate(var(--sway, 0deg)); }
+            50% { transform: translateX(0.6vmin) rotate(calc(var(--sway, 0deg) + 1.5deg)); }
+        }
+
+        @keyframes grass-sway {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(2deg); }
+        }
+
+        @keyframes firefly-glow {
+            0%, 100% {
+                opacity: 0;
+            }
+            35%, 65% {
+                opacity: 0.92;
+            }
+            50% {
+                opacity: 0.68;
+            }
+        }
+
+        @keyframes firefly-drift {
+            0%, 100% {
+                transform: translate(-50%, -50%) translateX(0) translateY(0) scale(0.9);
+            }
+            25% {
+                transform: translate(-50%, -50%) translateX(calc(var(--dx, 2vmin))) translateY(calc(var(--dy, -1.8vmin))) scale(1);
+            }
+            50% {
+                transform: translate(-50%, -50%) translateX(calc(var(--dx, -1.5vmin))) translateY(calc(var(--dy, 1.6vmin))) scale(0.95);
+            }
+            75% {
+                transform: translate(-50%, -50%) translateX(calc(var(--dx, 1vmin))) translateY(calc(var(--dy, 1.2vmin))) scale(1.02);
+            }
+        }
+
+        @media (max-width: 700px) {
+            .scene {
+                transform: scale(0.84);
+            }
+
+            .sprig--1 { left: 3%; }
+            .sprig--6 { left: 88%; }
+
+            .caption {
+                font-size: 0.75rem;
+                letter-spacing: 0.09em;
+            }
+        }
+    </style>
+</head>
+<body class="not-loaded">
+    <a class="return-link" href="./index.html">Back to the card</a>
+    <div class="night"></div>
+
+    <main class="scene" aria-label="Lavender field at night">
+        <div class="ground" aria-hidden="true"></div>
+        <div class="fireflies" aria-hidden="true">
+            <span class="firefly" style="--x: 12%; --y: 15%; --d: 4.8s; --delay: -1.1s; --dx: 2vmin; --dy: -1.8vmin;"></span>
+            <span class="firefly" style="--x: 28%; --y: 10%; --d: 5.3s; --delay: -0.7s; --dx: -1.8vmin; --dy: 1.6vmin;"></span>
+            <span class="firefly" style="--x: 40%; --y: 22%; --d: 4.4s; --delay: -1.6s; --dx: 1.6vmin; --dy: 1.2vmin;"></span>
+            <span class="firefly" style="--x: 63%; --y: 14%; --d: 4.9s; --delay: -0.9s; --dx: -2vmin; --dy: -1vmin;"></span>
+            <span class="firefly" style="--x: 78%; --y: 24%; --d: 5.1s; --delay: -0.4s; --dx: 2.2vmin; --dy: 1.7vmin;"></span>
+            <span class="firefly" style="--x: 22%; --y: 46%; --d: 4.2s; --delay: -1.3s; --dx: -1.5vmin; --dy: 1.4vmin;"></span>
+            <span class="firefly" style="--x: 68%; --y: 36%; --d: 5.0s; --delay: -0.5s; --dx: 1.9vmin; --dy: -1.3vmin;"></span>
+            <span class="firefly" style="--x: 88%; --y: 32%; --d: 4.6s; --delay: -1.0s; --dx: -1.7vmin; --dy: 1.9vmin;"></span>
+        </div>
+
+        <section class="bush" aria-hidden="true">
+            <div class="grass g1"></div>
+            <div class="grass g2"></div>
+            <div class="grass g3"></div>
+            <div class="grass g4"></div>
+            <div class="grass g5"></div>
+            <div class="grass g6"></div>
+            <div class="grass g7"></div>
+            <div class="grass g8"></div>
+        </section>
+
+        <section class="sprig sprig--1" style="--sway:-1deg; --sprig-height: 56vmin;">
+            <div class="flower-top"></div>
+            <div class="panicle">
+                <span class="bud cluster" style="--y: 4%; --r:-8deg;"></span>
+                <span class="bud" style="--y: 10%; --h: 2.1vmin; --r: 8deg;"></span>
+                <span class="bud" style="--y: 16%; left: 42%; --h: 2.1vmin; --r:-5deg;"></span>
+                <span class="bud" style="--y: 22%; left: 58%; --h: 2.3vmin; --r: 6deg;"></span>
+                <span class="bud" style="--y: 28%; left: 34%; --h: 2.1vmin; --r:-7deg;"></span>
+                <span class="bud" style="--y: 33%; left: 52%; --h: 2.1vmin; --r: 3deg;"></span>
+                <span class="bud" style="--y: 38%; left: 62%; --h: 2.2vmin; --r: 4deg;"></span>
+                <span class="bud" style="--y: 44%; left: 40%; --h: 2.4vmin; --r:-6deg;"></span>
+                <span class="bud" style="--y: 49%; left: 56%; --h: 2.2vmin; --r: 5deg;"></span>
+                <span class="bud" style="--y: 54%; left: 44%; --h: 2.1vmin; --r:-3deg;"></span>
+                <span class="bud" style="--y: 59%; left: 60%; --h: 2.1vmin; --r: 7deg;"></span>
+                <span class="bud" style="--y: 64%; left: 48%; --h: 2.2vmin; --r:-2deg;"></span>
+                <span class="bud" style="--y: 69%; left: 52%; --h: 2.2vmin; --r: 4deg;"></span>
+                <span class="bud" style="--y: 74%; left: 36%; --h: 2.4vmin; --r:-4deg;"></span>
+                <span class="bud" style="--y: 79%; left: 58%; --h: 2.1vmin; --r: 5deg;"></span>
+                <span class="bud" style="--y: 84%; left: 42%; --h: 2.1vmin; --r:-2deg;"></span>
+                <span class="bud" style="--y: 89%; left: 52%; --h: 2.1vmin; --r: 6deg;"></span>
+                <span class="bud" style="--y: 94%; left: 46%; --h: 2.2vmin; --r:-4deg;"></span>
+                <span class="bud cluster" style="--y: 98%; left: 50%; --r:-3deg;"></span>
+            </div>
+            <div class="leaf left"></div>
+            <div class="leaf right"></div>
+            <div class="stem"></div>
+        </section>
+
+        <section class="sprig sprig--2" style="--sway:1deg; --sprig-height: 53vmin;">
+            <div class="flower-top"></div>
+            <div class="panicle">
+                <span class="bud cluster" style="--y: 2%; --r:6deg;"></span>
+                <span class="bud" style="--y: 9%; left: 44%; --h: 2.1vmin; --r:-6deg;"></span>
+                <span class="bud" style="--y: 14%; left: 55%; --h: 2.1vmin; --r:5deg;"></span>
+                <span class="bud" style="--y: 19%; left: 58%; --h: 2.2vmin; --r:6deg;"></span>
+                <span class="bud" style="--y: 24%; left: 38%; --h: 2.3vmin; --r:-5deg;"></span>
+                <span class="bud" style="--y: 29%; left: 62%; --h: 2.4vmin; --r:4deg;"></span>
+                <span class="bud" style="--y: 34%; left: 46%; --h: 2.2vmin; --r:-3deg;"></span>
+                <span class="bud" style="--y: 39%; left: 42%; --h: 2.2vmin; --r:-4deg;"></span>
+                <span class="bud" style="--y: 44%; left: 58%; --h: 2.3vmin; --r:7deg;"></span>
+                <span class="bud" style="--y: 49%; left: 39%; --h: 2.3vmin; --r:-7deg;"></span>
+                <span class="bud" style="--y: 54%; left: 56%; --h: 2.2vmin; --r:3deg;"></span>
+                <span class="bud" style="--y: 59%; left: 44%; --h: 2.1vmin; --r:-2deg;"></span>
+                <span class="bud" style="--y: 64%; left: 56%; --h: 2.2vmin; --r:5deg;"></span>
+                <span class="bud" style="--y: 69%; left: 48%; --h: 2.1vmin; --r:-3deg;"></span>
+                <span class="bud" style="--y: 74%; left: 40%; --h: 2.2vmin; --r: 4deg;"></span>
+                <span class="bud" style="--y: 79%; left: 54%; --h: 2.1vmin; --r:-5deg;"></span>
+                <span class="bud" style="--y: 84%; left: 46%; --h: 2.2vmin; --r: 6deg;"></span>
+                <span class="bud" style="--y: 89%; left: 50%; --h: 2.1vmin; --r:-4deg;"></span>
+                <span class="bud cluster" style="--y: 94%; left: 48%; --r: 5deg;"></span>
+            </div>
+            <div class="leaf left"></div>
+            <div class="leaf right"></div>
+            <div class="stem"></div>
+        </section>
+
+        <section class="sprig sprig--3" style="--sway:-1.5deg; --sprig-height: 60vmin;">
+            <div class="flower-top"></div>
+            <div class="panicle">
+                <span class="bud cluster" style="--y: 3%; --r:4deg;"></span>
+                <span class="bud" style="--y: 10%; left: 42%; --h: 2.1vmin; --r:-4deg;"></span>
+                <span class="bud" style="--y: 16%; left: 58%; --h: 2.3vmin; --r:7deg;"></span>
+                <span class="bud" style="--y: 22%; left: 36%; --h: 2.1vmin; --r:-6deg;"></span>
+                <span class="bud" style="--y: 28%; left: 60%; --h: 2.3vmin; --r:5deg;"></span>
+                <span class="bud" style="--y: 33%; left: 46%; --h: 2.2vmin; --r:-5deg;"></span>
+                <span class="bud" style="--y: 38%; left: 43%; --h: 2.3vmin; --r:-4deg;"></span>
+                <span class="bud" style="--y: 43%; left: 57%; --h: 2.5vmin; --r:4deg;"></span>
+                <span class="bud" style="--y: 48%; left: 40%; --h: 2.4vmin; --r:-7deg;"></span>
+                <span class="bud" style="--y: 53%; left: 56%; --h: 2.2vmin; --r:6deg;"></span>
+                <span class="bud" style="--y: 58%; left: 45%; --h: 2.1vmin; --r:-3deg;"></span>
+                <span class="bud" style="--y: 63%; left: 58%; --h: 2.1vmin; --r:5deg;"></span>
+                <span class="bud" style="--y: 68%; left: 42%; --h: 2.2vmin; --r:-4deg;"></span>
+                <span class="bud" style="--y: 73%; left: 53%; --h: 2.3vmin; --r:3deg;"></span>
+                <span class="bud" style="--y: 78%; left: 38%; --h: 2.1vmin; --r:-6deg;"></span>
+                <span class="bud" style="--y: 83%; left: 56%; --h: 2.1vmin; --r: 6deg;"></span>
+                <span class="bud" style="--y: 88%; left: 50%; --h: 2.2vmin; --r:-5deg;"></span>
+                <span class="bud cluster" style="--y: 93%; left: 54%; --r: 4deg;"></span>
+            </div>
+            <div class="leaf left"></div>
+            <div class="leaf right"></div>
+            <div class="stem"></div>
+        </section>
+
+        <section class="sprig sprig--4" style="--sway:0.8deg; --sprig-height: 54vmin;">
+            <div class="flower-top"></div>
+            <div class="panicle">
+                <span class="bud cluster" style="--y: 4%; --r:-6deg;"></span>
+                <span class="bud" style="--y: 11%; left: 45%; --h: 2.1vmin; --r:6deg;"></span>
+                <span class="bud" style="--y: 16%; left: 59%; --h: 2.1vmin; --r:-4deg;"></span>
+                <span class="bud" style="--y: 21%; left: 38%; --h: 2.3vmin; --r:7deg;"></span>
+                <span class="bud" style="--y: 26%; left: 61%; --h: 2.2vmin; --r:-5deg;"></span>
+                <span class="bud" style="--y: 31%; left: 43%; --h: 2.2vmin; --r:4deg;"></span>
+                <span class="bud" style="--y: 35%; left: 41%; --h: 2.4vmin; --r:-2deg;"></span>
+                <span class="bud" style="--y: 39%; left: 57%; --h: 2.4vmin; --r:-6deg;"></span>
+                <span class="bud" style="--y: 44%; left: 53%; --h: 2.3vmin; --r:5deg;"></span>
+                <span class="bud" style="--y: 48%; left: 39%; --h: 2.1vmin; --r:-4deg;"></span>
+                <span class="bud" style="--y: 52%; left: 59%; --h: 2.2vmin; --r:4deg;"></span>
+                <span class="bud" style="--y: 56%; left: 48%; --h: 2.1vmin; --r:-3deg;"></span>
+                <span class="bud" style="--y: 60%; left: 40%; --h: 2.2vmin; --r: 3deg;"></span>
+                <span class="bud" style="--y: 64%; left: 56%; --h: 2.3vmin; --r:-5deg;"></span>
+                <span class="bud" style="--y: 68%; left: 44%; --h: 2.1vmin; --r:-1deg;"></span>
+                <span class="bud" style="--y: 72%; left: 52%; --h: 2.2vmin; --r: 5deg;"></span>
+                <span class="bud" style="--y: 76%; left: 46%; --h: 2.1vmin; --r:-4deg;"></span>
+                <span class="bud" style="--y: 80%; left: 50%; --h: 2.2vmin; --r: 4deg;"></span>
+                <span class="bud" style="--y: 84%; left: 42%; --h: 2.0vmin; --r:-3deg;"></span>
+                <span class="bud" style="--y: 88%; left: 54%; --h: 2.1vmin; --r: 5deg;"></span>
+                <span class="bud" style="--y: 91%; left: 48%; --h: 2.1vmin; --r:-4deg;"></span>
+                <span class="bud" style="--y: 94%; left: 52%; --h: 2.0vmin; --r: 3deg;"></span>
+                <span class="bud cluster" style="--y: 98%; left: 50%; --r:-3deg;"></span>
+            </div>
+            <div class="leaf left"></div>
+            <div class="leaf right"></div>
+            <div class="stem"></div>
+        </section>
+
+        <section class="sprig sprig--5" style="--sway:-0.8deg; --sprig-height: 57vmin;">
+            <div class="flower-top"></div>
+            <div class="panicle">
+                <span class="bud cluster" style="--y: 3%; --r:5deg;"></span>
+                <span class="bud" style="--y: 9%; left: 43%; --h: 2.1vmin; --r:-6deg;"></span>
+                <span class="bud" style="--y: 14%; left: 58%; --h: 2.1vmin; --r:4deg;"></span>
+                <span class="bud" style="--y: 19%; left: 36%; --h: 2.3vmin; --r:-5deg;"></span>
+                <span class="bud" style="--y: 24%; left: 61%; --h: 2.4vmin; --r:6deg;"></span>
+                <span class="bud" style="--y: 29%; left: 52%; --h: 2.2vmin; --r:-4deg;"></span>
+                <span class="bud" style="--y: 33%; left: 46%; --h: 2.3vmin; --r:2deg;"></span>
+                <span class="bud" style="--y: 37%; left: 40%; --h: 2.3vmin; --r:1deg;"></span>
+                <span class="bud" style="--y: 41%; left: 57%; --h: 2.3vmin; --r:3deg;"></span>
+                <span class="bud" style="--y: 45%; left: 38%; --h: 2.2vmin; --r:-6deg;"></span>
+                <span class="bud" style="--y: 49%; left: 60%; --h: 2.2vmin; --r:5deg;"></span>
+                <span class="bud" style="--y: 53%; left: 46%; --h: 2.1vmin; --r:-3deg;"></span>
+                <span class="bud" style="--y: 57%; left: 55%; --h: 2.1vmin; --r:4deg;"></span>
+                <span class="bud" style="--y: 61%; left: 40%; --h: 2.2vmin; --r:-5deg;"></span>
+                <span class="bud" style="--y: 65%; left: 57%; --h: 2.1vmin; --r:6deg;"></span>
+                <span class="bud" style="--y: 69%; left: 50%; --h: 2.1vmin; --r:-2deg;"></span>
+                <span class="bud" style="--y: 73%; left: 48%; --h: 2.2vmin; --r:4deg;"></span>
+                <span class="bud" style="--y: 77%; left: 52%; --h: 2.1vmin; --r:-4deg;"></span>
+                <span class="bud" style="--y: 81%; left: 42%; --h: 2.2vmin; --r:3deg;"></span>
+                <span class="bud" style="--y: 85%; left: 54%; --h: 2.1vmin; --r:5deg;"></span>
+                <span class="bud" style="--y: 89%; left: 48%; --h: 2.1vmin; --r:-4deg;"></span>
+                <span class="bud" style="--y: 92%; left: 56%; --h: 2.0vmin; --r: 4deg;"></span>
+                <span class="bud cluster" style="--y: 97%; left: 52%; --r:-4deg;"></span>
+            </div>
+            <div class="leaf left"></div>
+            <div class="leaf right"></div>
+            <div class="stem"></div>
+        </section>
+
+        <section class="sprig sprig--6" style="--sway:1.4deg; --sprig-height: 52vmin;">
+            <div class="flower-top"></div>
+            <div class="panicle">
+                <span class="bud cluster" style="--y: 5%; --r:-4deg;"></span>
+                <span class="bud" style="--y: 11%; left: 45%; --h: 2.1vmin; --r:5deg;"></span>
+                <span class="bud" style="--y: 16%; left: 57%; --h: 2.1vmin; --r:-6deg;"></span>
+                <span class="bud" style="--y: 21%; left: 37%; --h: 2.3vmin; --r:4deg;"></span>
+                <span class="bud" style="--y: 26%; left: 60%; --h: 2.3vmin; --r:-5deg;"></span>
+                <span class="bud" style="--y: 31%; left: 43%; --h: 2.2vmin; --r:6deg;"></span>
+                <span class="bud" style="--y: 35%; left: 50%; --h: 2.1vmin; --r:-4deg;"></span>
+                <span class="bud" style="--y: 39%; left: 55%; --h: 2.2vmin; --r:-2deg;"></span>
+                <span class="bud" style="--y: 43%; left: 40%; --h: 2.2vmin; --r:4deg;"></span>
+                <span class="bud" style="--y: 47%; left: 57%; --h: 2.2vmin; --r:-3deg;"></span>
+                <span class="bud" style="--y: 51%; left: 44%; --h: 2.1vmin; --r:5deg;"></span>
+                <span class="bud" style="--y: 55%; left: 56%; --h: 2.1vmin; --r:-2deg;"></span>
+                <span class="bud" style="--y: 59%; left: 40%; --h: 2.2vmin; --r:4deg;"></span>
+                <span class="bud" style="--y: 63%; left: 58%; --h: 2.2vmin; --r:-5deg;"></span>
+                <span class="bud" style="--y: 67%; left: 46%; --h: 2.1vmin; --r:2deg;"></span>
+                <span class="bud" style="--y: 71%; left: 52%; --h: 2.2vmin; --r:-4deg;"></span>
+                <span class="bud" style="--y: 75%; left: 48%; --h: 2.1vmin; --r:4deg;"></span>
+                <span class="bud" style="--y: 79%; left: 54%; --h: 2.2vmin; --r:-3deg;"></span>
+                <span class="bud" style="--y: 83%; left: 42%; --h: 2.1vmin; --r:5deg;"></span>
+                <span class="bud" style="--y: 87%; left: 50%; --h: 2.1vmin; --r:-4deg;"></span>
+                <span class="bud" style="--y: 90%; left: 48%; --h: 2.0vmin; --r:3deg;"></span>
+                <span class="bud cluster" style="--y: 95%; left: 50%; --r:-4deg;"></span>
+            </div>
+            <div class="leaf left"></div>
+            <div class="leaf right"></div>
+            <div class="stem"></div>
+        </section>
+
+        <section class="sprig sprig--7" style="--sway:-2deg; --sprig-height: 48vmin;">
+            <div class="flower-top"></div>
+            <div class="panicle">
+                <span class="bud cluster" style="--y: 3%; --r:4deg;"></span>
+                <span class="bud" style="--y: 10%; left: 43%; --h: 2.1vmin; --r:-5deg;"></span>
+                <span class="bud" style="--y: 15%; left: 56%; --h: 2.1vmin; --r:3deg;"></span>
+                <span class="bud" style="--y: 20%; left: 38%; --h: 2.3vmin; --r:-4deg;"></span>
+                <span class="bud" style="--y: 25%; left: 60%; --h: 2.2vmin; --r:5deg;"></span>
+                <span class="bud" style="--y: 30%; left: 42%; --h: 2.3vmin; --r:-6deg;"></span>
+                <span class="bud" style="--y: 35%; left: 55%; --h: 2.2vmin; --r:4deg;"></span>
+                <span class="bud" style="--y: 39%; left: 50%; --h: 2.2vmin; --r:-2deg;"></span>
+                <span class="bud" style="--y: 43%; left: 40%; --h: 2.2vmin; --r:-5deg;"></span>
+                <span class="bud" style="--y: 47%; left: 58%; --h: 2.1vmin; --r:6deg;"></span>
+                <span class="bud" style="--y: 51%; left: 45%; --h: 2.2vmin; --r:-3deg;"></span>
+                <span class="bud" style="--y: 55%; left: 53%; --h: 2.1vmin; --r:4deg;"></span>
+                <span class="bud" style="--y: 59%; left: 39%; --h: 2.2vmin; --r:-6deg;"></span>
+                <span class="bud" style="--y: 63%; left: 57%; --h: 2.1vmin; --r:5deg;"></span>
+                <span class="bud" style="--y: 67%; left: 44%; --h: 2.1vmin; --r:-4deg;"></span>
+                <span class="bud" style="--y: 71%; left: 50%; --h: 2.2vmin; --r:6deg;"></span>
+                <span class="bud" style="--y: 75%; left: 46%; --h: 2.1vmin; --r:-3deg;"></span>
+                <span class="bud" style="--y: 79%; left: 52%; --h: 2.1vmin; --r:4deg;"></span>
+                <span class="bud" style="--y: 83%; left: 48%; --h: 2.0vmin; --r:-4deg;"></span>
+                <span class="bud" style="--y: 87%; left: 54%; --h: 2.1vmin; --r:5deg;"></span>
+                <span class="bud" style="--y: 90%; left: 50%; --h: 2.0vmin; --r:-2deg;"></span>
+                <span class="bud cluster" style="--y: 94%; left: 50%; --r:4deg;"></span>
+            </div>
+            <div class="leaf left"></div>
+            <div class="leaf right"></div>
+            <div class="stem"></div>
+        </section>
+
+        <section class="sprig sprig--8" style="--sway:2deg; --sprig-height: 50vmin;">
+            <div class="flower-top"></div>
+            <div class="panicle">
+                <span class="bud cluster" style="--y: 4%; --r:-5deg;"></span>
+                <span class="bud" style="--y: 10%; left: 44%; --h: 2.1vmin; --r:5deg;"></span>
+                <span class="bud" style="--y: 15%; left: 58%; --h: 2.1vmin; --r:-6deg;"></span>
+                <span class="bud" style="--y: 20%; left: 36%; --h: 2.3vmin; --r:4deg;"></span>
+                <span class="bud" style="--y: 25%; left: 61%; --h: 2.2vmin; --r:-4deg;"></span>
+                <span class="bud" style="--y: 30%; left: 43%; --h: 2.3vmin; --r:6deg;"></span>
+                <span class="bud" style="--y: 35%; left: 55%; --h: 2.2vmin; --r:-5deg;"></span>
+                <span class="bud" style="--y: 39%; left: 49%; --h: 2.2vmin; --r:1deg;"></span>
+                <span class="bud" style="--y: 43%; left: 39%; --h: 2.2vmin; --r:4deg;"></span>
+                <span class="bud" style="--y: 47%; left: 59%; --h: 2.1vmin; --r:-6deg;"></span>
+                <span class="bud" style="--y: 51%; left: 47%; --h: 2.1vmin; --r:5deg;"></span>
+                <span class="bud" style="--y: 55%; left: 53%; --h: 2.2vmin; --r:-2deg;"></span>
+                <span class="bud" style="--y: 59%; left: 41%; --h: 2.1vmin; --r:4deg;"></span>
+                <span class="bud" style="--y: 63%; left: 57%; --h: 2.2vmin; --r:-5deg;"></span>
+                <span class="bud" style="--y: 67%; left: 45%; --h: 2.1vmin; --r:3deg;"></span>
+                <span class="bud" style="--y: 71%; left: 50%; --h: 2.2vmin; --r:-4deg;"></span>
+                <span class="bud" style="--y: 75%; left: 46%; --h: 2.1vmin; --r:5deg;"></span>
+                <span class="bud" style="--y: 79%; left: 52%; --h: 2.1vmin; --r:-3deg;"></span>
+                <span class="bud" style="--y: 83%; left: 48%; --h: 2.0vmin; --r:4deg;"></span>
+                <span class="bud" style="--y: 87%; left: 54%; --h: 2.0vmin; --r:5deg;"></span>
+                <span class="bud" style="--y: 90%; left: 50%; --h: 2.1vmin; --r:-2deg;"></span>
+                <span class="bud cluster" style="--y: 94%; left: 50%; --r:4deg;"></span>
+            </div>
+            <div class="leaf left"></div>
+            <div class="leaf right"></div>
+            <div class="stem"></div>
+        </section>
+
+        <section class="sprig sprig--9" style="--sway:-1.2deg; --sprig-height: 48vmin;">
+            <div class="flower-top"></div>
+            <div class="panicle">
+                <span class="bud cluster" style="--y: 4%; --r:2deg;"></span>
+                <span class="bud" style="--y: 11%; left: 46%; --h: 2.0vmin; --r:-3deg;"></span>
+                <span class="bud" style="--y: 17%; left: 58%; --h: 2.1vmin; --r:4deg;"></span>
+                <span class="bud" style="--y: 22%; left: 38%; --h: 2.3vmin; --r:-6deg;"></span>
+                <span class="bud" style="--y: 27%; left: 61%; --h: 2.2vmin; --r:5deg;"></span>
+                <span class="bud" style="--y: 32%; left: 44%; --h: 2.2vmin; --r:-4deg;"></span>
+                <span class="bud" style="--y: 36%; left: 52%; --h: 2.1vmin; --r:2deg;"></span>
+                <span class="bud" style="--y: 40%; left: 41%; --h: 2.3vmin; --r:-5deg;"></span>
+                <span class="bud" style="--y: 44%; left: 57%; --h: 2.2vmin; --r:4deg;"></span>
+                <span class="bud" style="--y: 48%; left: 43%; --h: 2.1vmin; --r:-2deg;"></span>
+                <span class="bud" style="--y: 52%; left: 55%; --h: 2.1vmin; --r:3deg;"></span>
+                <span class="bud" style="--y: 56%; left: 40%; --h: 2.2vmin; --r:-4deg;"></span>
+                <span class="bud" style="--y: 60%; left: 58%; --h: 2.1vmin; --r:5deg;"></span>
+                <span class="bud" style="--y: 64%; left: 47%; --h: 2.0vmin; --r:-3deg;"></span>
+                <span class="bud" style="--y: 68%; left: 53%; --h: 2.1vmin; --r:4deg;"></span>
+                <span class="bud" style="--y: 72%; left: 42%; --h: 2.0vmin; --r:-4deg;"></span>
+                <span class="bud" style="--y: 76%; left: 52%; --h: 2.0vmin; --r:5deg;"></span>
+                <span class="bud" style="--y: 80%; left: 48%; --h: 2.0vmin; --r:-2deg;"></span>
+                <span class="bud" style="--y: 84%; left: 51%; --h: 2.0vmin; --r:4deg;"></span>
+                <span class="bud" style="--y: 88%; left: 49%; --h: 2.0vmin; --r:-3deg;"></span>
+                <span class="bud cluster" style="--y: 93%; left: 50%; --r:3deg;"></span>
+            </div>
+            <div class="leaf left"></div>
+            <div class="leaf right"></div>
+            <div class="stem"></div>
+        </section>
+
+        <section class="sprig sprig--10" style="--sway:1.1deg; --sprig-height: 50vmin;">
+            <div class="flower-top"></div>
+            <div class="panicle">
+                <span class="bud cluster" style="--y: 3%; --r:-5deg;"></span>
+                <span class="bud" style="--y: 10%; left: 43%; --h: 2.0vmin; --r:5deg;"></span>
+                <span class="bud" style="--y: 15%; left: 57%; --h: 2.1vmin; --r:-4deg;"></span>
+                <span class="bud" style="--y: 20%; left: 36%; --h: 2.3vmin; --r:4deg;"></span>
+                <span class="bud" style="--y: 25%; left: 62%; --h: 2.2vmin; --r:-5deg;"></span>
+                <span class="bud" style="--y: 30%; left: 44%; --h: 2.2vmin; --r:3deg;"></span>
+                <span class="bud" style="--y: 34%; left: 50%; --h: 2.1vmin; --r:-2deg;"></span>
+                <span class="bud" style="--y: 38%; left: 41%; --h: 2.2vmin; --r:-6deg;"></span>
+                <span class="bud" style="--y: 42%; left: 56%; --h: 2.2vmin; --r:4deg;"></span>
+                <span class="bud" style="--y: 46%; left: 47%; --h: 2.1vmin; --r:-3deg;"></span>
+                <span class="bud" style="--y: 50%; left: 52%; --h: 2.0vmin; --r:5deg;"></span>
+                <span class="bud" style="--y: 54%; left: 40%; --h: 2.2vmin; --r:-4deg;"></span>
+                <span class="bud" style="--y: 58%; left: 58%; --h: 2.1vmin; --r:4deg;"></span>
+                <span class="bud" style="--y: 62%; left: 46%; --h: 2.0vmin; --r:-2deg;"></span>
+                <span class="bud" style="--y: 66%; left: 53%; --h: 2.0vmin; --r:5deg;"></span>
+                <span class="bud" style="--y: 70%; left: 41%; --h: 2.1vmin; --r:-4deg;"></span>
+                <span class="bud" style="--y: 74%; left: 51%; --h: 2.0vmin; --r:4deg;"></span>
+                <span class="bud" style="--y: 78%; left: 49%; --h: 2.0vmin; --r:-3deg;"></span>
+                <span class="bud" style="--y: 82%; left: 54%; --h: 2.0vmin; --r:5deg;"></span>
+                <span class="bud" style="--y: 86%; left: 48%; --h: 2.0vmin; --r:-2deg;"></span>
+                <span class="bud cluster" style="--y: 92%; left: 50%; --r:4deg;"></span>
+            </div>
+            <div class="leaf left"></div>
+            <div class="leaf right"></div>
+            <div class="stem"></div>
+        </section>
+
+        <section class="sprig sprig--11" style="--sway:-0.7deg; --sprig-height: 49vmin;">
+            <div class="flower-top"></div>
+            <div class="panicle">
+                <span class="bud cluster" style="--y: 4%; --r:3deg;"></span>
+                <span class="bud" style="--y: 11%; left: 46%; --h: 2.1vmin; --r:-4deg;"></span>
+                <span class="bud" style="--y: 16%; left: 58%; --h: 2.1vmin; --r:5deg;"></span>
+                <span class="bud" style="--y: 21%; left: 38%; --h: 2.3vmin; --r:-5deg;"></span>
+                <span class="bud" style="--y: 26%; left: 62%; --h: 2.2vmin; --r:4deg;"></span>
+                <span class="bud" style="--y: 31%; left: 43%; --h: 2.2vmin; --r:-2deg;"></span>
+                <span class="bud" style="--y: 35%; left: 54%; --h: 2.1vmin; --r:3deg;"></span>
+                <span class="bud" style="--y: 39%; left: 41%; --h: 2.2vmin; --r:-6deg;"></span>
+                <span class="bud" style="--y: 43%; left: 56%; --h: 2.2vmin; --r:5deg;"></span>
+                <span class="bud" style="--y: 47%; left: 45%; --h: 2.1vmin; --r:-3deg;"></span>
+                <span class="bud" style="--y: 51%; left: 50%; --h: 2.0vmin; --r:4deg;"></span>
+                <span class="bud" style="--y: 55%; left: 39%; --h: 2.1vmin; --r:-4deg;"></span>
+                <span class="bud" style="--y: 59%; left: 58%; --h: 2.0vmin; --r:5deg;"></span>
+                <span class="bud" style="--y: 63%; left: 47%; --h: 2.0vmin; --r:-2deg;"></span>
+                <span class="bud" style="--y: 67%; left: 53%; --h: 2.0vmin; --r:4deg;"></span>
+                <span class="bud" style="--y: 71%; left: 42%; --h: 2.0vmin; --r:-5deg;"></span>
+                <span class="bud" style="--y: 75%; left: 52%; --h: 2.0vmin; --r:5deg;"></span>
+                <span class="bud" style="--y: 79%; left: 49%; --h: 2.0vmin; --r:-3deg;"></span>
+                <span class="bud" style="--y: 83%; left: 51%; --h: 2.0vmin; --r:4deg;"></span>
+                <span class="bud" style="--y: 87%; left: 49%; --h: 2.0vmin; --r:-2deg;"></span>
+                <span class="bud cluster" style="--y: 92%; left: 50%; --r:3deg;"></span>
+            </div>
+            <div class="leaf left"></div>
+            <div class="leaf right"></div>
+            <div class="stem"></div>
+        </section>
+
+        <section class="sprig sprig--12" style="--sway:1.8deg; --sprig-height: 47vmin;">
+            <div class="flower-top"></div>
+            <div class="panicle">
+                <span class="bud cluster" style="--y: 3%; --r:-3deg;"></span>
+                <span class="bud" style="--y: 10%; left: 44%; --h: 2.0vmin; --r:5deg;"></span>
+                <span class="bud" style="--y: 15%; left: 57%; --h: 2.1vmin; --r:-5deg;"></span>
+                <span class="bud" style="--y: 20%; left: 37%; --h: 2.3vmin; --r:4deg;"></span>
+                <span class="bud" style="--y: 25%; left: 60%; --h: 2.2vmin; --r:-4deg;"></span>
+                <span class="bud" style="--y: 30%; left: 43%; --h: 2.2vmin; --r:3deg;"></span>
+                <span class="bud" style="--y: 34%; left: 51%; --h: 2.1vmin; --r:-2deg;"></span>
+                <span class="bud" style="--y: 38%; left: 40%; --h: 2.2vmin; --r:-6deg;"></span>
+                <span class="bud" style="--y: 42%; left: 56%; --h: 2.2vmin; --r:4deg;"></span>
+                <span class="bud" style="--y: 46%; left: 48%; --h: 2.1vmin; --r:-3deg;"></span>
+                <span class="bud" style="--y: 50%; left: 52%; --h: 2.0vmin; --r:4deg;"></span>
+                <span class="bud" style="--y: 54%; left: 41%; --h: 2.1vmin; --r:-4deg;"></span>
+                <span class="bud" style="--y: 58%; left: 58%; --h: 2.0vmin; --r:5deg;"></span>
+                <span class="bud" style="--y: 62%; left: 47%; --h: 2.0vmin; --r:-2deg;"></span>
+                <span class="bud" style="--y: 66%; left: 53%; --h: 2.0vmin; --r:4deg;"></span>
+                <span class="bud" style="--y: 70%; left: 43%; --h: 2.0vmin; --r:-5deg;"></span>
+                <span class="bud" style="--y: 74%; left: 52%; --h: 2.0vmin; --r:5deg;"></span>
+                <span class="bud" style="--y: 78%; left: 48%; --h: 2.0vmin; --r:-3deg;"></span>
+                <span class="bud" style="--y: 82%; left: 50%; --h: 2.0vmin; --r:4deg;"></span>
+                <span class="bud" style="--y: 86%; left: 49%; --h: 2.0vmin; --r:-2deg;"></span>
+                <span class="bud cluster" style="--y: 91%; left: 50%; --r:3deg;"></span>
+            </div>
+            <div class="leaf left"></div>
+            <div class="leaf right"></div>
+            <div class="stem"></div>
+        </section>
+
+        </section>
+    </main>
+
+    <div class="caption">lavenders?</div>
+
+    <script>
+        window.onload = () => {
+            const timer = setTimeout(() => {
+                document.body.classList.remove('not-loaded');
+                clearTimeout(timer);
+            }, 900);
+        };
+    </script>
+</body>
+</html>
