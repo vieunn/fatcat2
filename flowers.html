@@ -438,6 +438,7 @@
 </head>
 <body class="not-loaded">
     <a class="return-link" href="./index.html">Back to the card</a>
+    <audio id="bg-music" src="./The 1975 - An Encounter [hbLUlRiHpj0].mp3" loop preload="auto"></audio>
     <div class="night"></div>
 
     <main class="scene" aria-label="Lavender field at night">
@@ -830,12 +831,25 @@
     <div class="caption">lavenders?</div>
 
     <script>
+        const bgMusic = document.getElementById('bg-music');
+
+        const tryPlayMusic = () => {
+            if (!bgMusic) return;
+            bgMusic.play().catch(() => {
+                // Autoplay may be blocked until user interacts.
+            });
+        };
+
         window.onload = () => {
             const timer = setTimeout(() => {
                 document.body.classList.remove('not-loaded');
                 clearTimeout(timer);
             }, 900);
+            tryPlayMusic();
         };
+
+        document.body.addEventListener('pointerdown', tryPlayMusic, { once: true });
+        document.body.addEventListener('keydown', tryPlayMusic, { once: true });
     </script>
 </body>
 </html>
