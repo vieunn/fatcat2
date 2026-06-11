@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Track 02 — About You</title>
+    <!-- Tailwind CSS for rich grid layout and utility styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Beautiful Vintage and Handdrawn Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=EB+Garamond:ital,wght@0,400..700;1,400..700&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+            <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(180deg, #faf3eb 0%, #f1e7dc 100%);
+            color: #5c4735;
+            overflow-x: hidden;
+            padding-top: calc(1.5rem + env(safe-area-inset-top));
+            padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+            padding-left: calc(1rem + env(safe-area-inset-left));
+            padding-right: calc(1rem + env(safe-area-inset-right));
+        }
+
+        button, .clickable {
+            touch-action: manipulation;
+        }
+
+        .paper-lines {
+            background-image: linear-gradient(#d9c4af 1px, transparent 1px);
+            background-size: 100% 1.8rem;
+            line-height: 1.9rem;
+        }
+
+        .floating-note {
+            position: absolute;
+            pointer-events: none;
+            font-size: 14px;
+            animation: note-float 4s ease-out forwards;
+            z-index: 15;
+            color: #7b5d45;
+            text-shadow: 0 1px 2px rgba(255,255,255,0.75);
+        }
+
+        @keyframes note-float {
+            0% { transform: translateY(0) translateX(0) scale(0.62) rotate(0deg); opacity: 0; }
+            30% { opacity: 0.72; }
+            100% { transform: translateY(-90px) translateX(var(--drift-x)) scale(1.05) rotate(var(--rot)); opacity: 0; }
+        }
+
+        @keyframes reel-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .reels-spinning { animation: reel-spin 5s linear infinite; }
+        .reels-spinning-fast { animation: reel-spin 1.8s linear infinite; }
+
+        #sparkle-container { display: none; }
+        .coffee-ring { display: none; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f7e9dc; }
+        ::-webkit-scrollbar-thumb { background: #cbb09a; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #b69378; }
+
+        button, .clickable, .group > button {
+            min-width: 44px;
+            min-height: 44px;
+            padding: 10px 14px;
+            border-radius: 14px;
+            border: none;
+            background: #f7e3d5;
+            color: #5c4635;
+            box-shadow: 0 10px 18px rgba(0,0,0,0.08);
+            transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+        }
+        button:hover, .clickable:hover { transform: translateY(-1px); }
+        button:active, .clickable:active { transform: translateY(0); box-shadow: inset 0 2px 8px rgba(0,0,0,0.1); }
+
+        .note-card { transition: none; }
+
+        @media (max-width: 420px) {
+            .paper-lines { font-size: 1rem; line-height: 1.75rem; }
+            header h1 { font-size: 1.45rem; }
+        }
+
+        input[type="range"].volume-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            background: linear-gradient(90deg, #e8c6a9, #eed7c7);
+            border-radius: 999px;
+            outline: none;
+        }
+        input[type="range"].volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #6a4e3a;
+            border-radius: 50%;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.24);
+            cursor: pointer;
+        }
+        input[type="range"].volume-slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #6a4e3a;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="min-h-screen relative flex flex-col justify-between text-[#5c4a3c] antialiased">
+
+    <!-- AUDIO ELEMENT: Change the "src" attribute below to your own MP3 or audio file path! -->
+    <audio id="bg-music" loop preload="auto">
+        <source src="./The 1975 - About You (Official).mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <div id="sparkle-container" class="absolute inset-0 pointer-events-none overflow-hidden z-10"></div>
+
+    <!-- Sparkle Canvas Overlay -->
+    <!-- Vintage Header Banner -->
+    <header class="w-full max-w-6xl mx-auto mb-6 text-center z-10 px-2">
+        <div class="inline-block relative">
+            <h1 class="text-3xl md:text-5xl font-['EB_Garamond'] italic font-bold text-[#4a3b2c]">Track 02: About You</h1>
+            <p class="font-['Caveat'] text-base md:text-2xl text-[#8c6b53] mt-1">
+                during the exam season✨
+            </p>
+            
+        </div>
+    </header>
+
+    <!-- Desk Surface Container -->
+    <main class="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start justify-center my-auto z-10 relative">
+        
+        <!-- Subtle Coffee Stain Doodling details to enrich the desk texture -->
+        <!-- LEFT SIDE: RETRO CASSETTE RECORDER / PLAYER DECK -->
+        <section class="lg:col-span-5 flex flex-col items-center justify-center space-y-6 w-full px-1 max-w-sm mx-auto">
+            <!-- Cassette Recorder/Player frame -->
+            <div class="w-full bg-[#5c4738] rounded-2xl p-4 md:p-6 shadow-2xl border-4 border-[#3e2e22] relative transition-all duration-300 hover:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.4)]">
+                <!-- Retro Brand Logo Header -->
+                <div class="flex justify-between items-center mb-3 pb-2 border-b border-[#735a49]">
+                    <span class="font-['Courier_Prime'] text-[10px] md:text-xs uppercase tracking-wider text-[#d4c3b3]">Good Luck - Model 2026</span>
+                    <div class="flex space-x-1">
+                        <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse" id="record-light"></span>
+                        <span class="w-2 h-2 rounded-full bg-emerald-500" id="power-light"></span>
+                    </div>
+                </div>
+
+                <!-- Small Volume Control -->
+                <div class="mt-3 flex items-center justify-center gap-3 px-2" aria-hidden="false">
+                    <label for="volumeSlider" class="sr-only">Volume</label>
+                    <input id="volumeSlider" class="volume-slider w-40 md:w-48" type="range" min="0" max="1" step="0.01" value="0.6" aria-label="Volume slider">
+                </div>
+
+                <!-- Cassette Tape Itself -->
+                <div id="cassette-body" class="w-full h-40 md:h-48 bg-[#d4c3b3] rounded-xl p-3 border-4 border-[#3e2e22] relative flex flex-col justify-between overflow-hidden shadow-inner">
+                    <!-- Write Protection Tabs and Top Details -->
+                    <div class="flex justify-between text-[8px] md:text-[9px] font-['Courier_Prime'] text-[#5c4738] uppercase font-bold px-2 md:px-4">
+                        <span>A - Side</span>
+                        <span>NR [ON]</span>
+                    </div>
+
+                    <!-- Main Colored Cassette Sticker Label -->
+                    <div class="w-full h-24 md:h-28 bg-[#f5ebe0] rounded-lg border-2 border-[#5c4738] p-1.5 md:p-2 flex flex-col justify-between relative shadow-sm">
+                        <!-- Label Stripes and Texts -->
+                        <div class="absolute top-0 left-0 right-0 h-1.5 md:h-2 bg-gradient-to-r from-pink-300 via-[#e07a5f] to-amber-200 opacity-80"></div>
+                        
+                        <!-- Track Metadata -->
+                        <div class="mt-1 md:mt-2 text-center">
+                            <h3 class="font-['EB_Garamond'] font-bold text-[#4a3b2c] italic text-sm md:text-base tracking-wide leading-tight">Track 02: About You</h3>
+                            <p class="text-[8px] md:text-[10px] uppercase font-['Courier_Prime'] text-[#8c6b53] tracking-wider md:tracking-widest mt-0.5">A 1975-inspired cassette just for you.</p>
+                        </div>
+
+                        <!-- Central Plastic Window & Spinning Reels -->
+                        <div class="w-32 md:w-40 h-8 md:h-10 bg-[#3e2e22] rounded-full mx-auto flex items-center justify-between px-2 md:px-3 border border-[#d4c3b3] shadow-inner relative overflow-hidden">
+                            <!-- Left Reel Gear -->
+                            <div id="left-reel" class="w-5 h-5 md:w-6 md:h-6 rounded-full bg-[#f3e5d8] border border-[#d4c3b3] flex items-center justify-center relative">
+                                <div class="w-1.5 h-1.5 rounded-full bg-[#3e2e22]"></div>
+                                <!-- Teeth notches -->
+                                <div class="absolute inset-0 flex justify-between items-center px-0.5"><div class="w-0.5 h-0.5 bg-[#3e2e22] rounded"></div><div class="w-0.5 h-0.5 bg-[#3e2e22] rounded"></div></div>
+                                <div class="absolute inset-0 flex flex-col justify-between items-center py-0.5"><div class="w-0.5 h-0.5 bg-[#3e2e22] rounded"></div><div class="w-0.5 h-0.5 bg-[#3e2e22] rounded"></div></div>
+                            </div>
+
+                            <!-- Tiny window center line of tape -->
+                            <div class="w-10 md:w-14 h-1 bg-[#8c6b53] rounded opacity-70"></div>
+
+                            <!-- Right Reel Gear -->
+                            <div id="right-reel" class="w-5 h-5 md:w-6 md:h-6 rounded-full bg-[#f3e5d8] border border-[#d4c3b3] flex items-center justify-center relative">
+                                <div class="w-1.5 h-1.5 rounded-full bg-[#3e2e22]"></div>
+                                <!-- Teeth notches -->
+                                <div class="absolute inset-0 flex justify-between items-center px-0.5"><div class="w-0.5 h-0.5 bg-[#3e2e22] rounded"></div><div class="w-0.5 h-0.5 bg-[#3e2e22] rounded"></div></div>
+                                <div class="absolute inset-0 flex flex-col justify-between items-center py-0.5"><div class="w-0.5 h-0.5 bg-[#3e2e22] rounded"></div><div class="w-0.5 h-0.5 bg-[#3e2e22] rounded"></div></div>
+                            </div>
+                        </div>
+
+                        <!-- Sticker footer notes -->
+                        <div class="flex justify-between items-end text-[7px] md:text-[8px] font-mono text-[#8c6b53]">
+                            <span>CrO2 / EQ 120µs</span>
+                            <span>STEREO SYSTEM</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tape Deck Hardware Controls Under Cassette -->
+                <div class="grid grid-cols-4 gap-2 mt-4">
+                    <button id="btn-play" onclick="startLoadingSequence()" class="bg-[#ebdcc9] hover:bg-[#ebdcc9]/90 border-b-4 border-r-2 border-[#a69584] active:border-b-0 active:border-r-0 active:translate-y-[4px] active:translate-x-[2px] transition-all rounded py-2.5 px-1 flex flex-col items-center justify-center text-[#5c4738] group">
+                        <svg class="w-4 h-4 md:w-5 md:h-5 text-emerald-600 transition-transform group-hover:scale-110" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z"/>
+                        </svg>
+                        <span class="text-[9px] md:text-[10px] font-bold mt-1 uppercase tracking-wider font-mono">Play</span>
+                    </button>
+                    
+                    <button id="btn-pause" onclick="togglePause()" class="bg-[#ebdcc9] hover:bg-[#ebdcc9]/90 border-b-4 border-r-2 border-[#a69584] active:border-b-0 active:border-r-0 active:translate-y-[4px] active:translate-x-[2px] transition-all rounded py-2.5 px-1 flex flex-col items-center justify-center text-[#5c4738] opacity-50 cursor-not-allowed" disabled>
+                        <svg class="w-4 h-4 md:w-5 md:h-5 text-amber-600" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                        </svg>
+                        <span class="text-[9px] md:text-[10px] font-bold mt-1 uppercase tracking-wider font-mono">Pause</span>
+                    </button>
+
+                    <button id="btn-stop" onclick="stopLoadingSequence()" class="bg-[#ebdcc9] hover:bg-[#ebdcc9]/90 border-b-4 border-r-2 border-[#a69584] active:border-b-0 active:border-r-0 active:translate-y-[4px] active:translate-x-[2px] transition-all rounded py-2.5 px-1 flex flex-col items-center justify-center text-[#5c4738] opacity-50 cursor-not-allowed" disabled>
+                        <svg class="w-4 h-4 md:w-5 md:h-5 text-rose-600" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M6 6h12v12H6z"/>
+                        </svg>
+                        <span class="text-[9px] md:text-[10px] font-bold mt-1 uppercase tracking-wider font-mono">Stop</span>
+                    </button>
+
+                    <button id="btn-click" onclick="goToNextCassette()" class="bg-[#ebdcc9] hover:bg-[#ebdcc9]/90 border-b-4 border-r-2 border-[#a69584] active:border-b-0 active:border-r-0 active:translate-y-[4px] active:translate-x-[2px] transition-all rounded py-2.5 px-1 flex flex-col items-center justify-center text-[#5c4738] bg-emerald-100 border-emerald-400">
+                        <span id="click-icon-wrapper" class="text-emerald-700">
+                            <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M7 11l5-5 5 5M12 6v12"/>
+                            </svg>
+                        </span>
+                        <span class="text-[9px] md:text-[10px] font-bold mt-1 uppercase tracking-wider font-mono">Click</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Retro Amber Screen Monitor displaying Status Logs & Success Report -->
+            <div class="w-full bg-[#281c12] border-4 border-[#1e140d] rounded-xl p-4 shadow-xl relative min-h-[200px] md:min-h-[220px] flex flex-col justify-between font-['Courier_Prime']">
+                <!-- Screen Glow effect overlay -->
+                <div class="absolute inset-0 bg-radial-gradient(ellipse at center, rgba(230,137,45,0.05) 0%, rgba(0,0,0,0) 85%) pointer-events-none"></div>
+                
+                <!-- Monitor Header -->
+                <div class="flex justify-between items-center text-[10px] md:text-[11px] text-[#f7a460] opacity-80 pb-2 border-b border-[#3e2e22] mb-3">
+                    <span>CONCURRENT FORECAST v1.2</span>
+                    <span id="screen-clock" class="animate-pulse">ONLINE</span>
+                </div>
+
+                <!-- Display Terminal Content Screen -->
+                <div id="screen-terminal" class="flex-grow flex flex-col justify-center space-y-1.5 text-[11px] md:text-xs text-[#ffdcb3] leading-relaxed">
+                    <!-- Default Screen Text -->
+                    <div id="state-idle" class="text-center space-y-3 py-2">
+                        <p class="text-amber-300 font-bold animate-pulse text-xs md:text-sm">◀ DECK STANDBY ▶</p>
+                        <p class="text-[#e2bca0] text-[10px] md:text-xs px-2">Press play to trigger real-time bestie calibration and play study music.</p>
+                        <div class="inline-block px-2.5 py-0.5 bg-[#3a2b1f] border border-[#523d2d] rounded-md text-[9px] md:text-[10px] text-amber-200">
+                            Ready to load encouragement...
+                        </div>
+                    </div>
+
+                    <!-- Interactive Progress Sequence Display -->
+                    <div id="state-loading" class="hidden space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[10px] md:text-xs text-amber-400 font-bold">LOADING SUCCESS...</span>
+                            <span id="load-percent" class="text-xs md:text-sm text-pink-300 font-bold">0%</span>
+                        </div>
+                        
+                        <!-- Retro Pixelized Progress Bar -->
+                        <div class="w-full bg-[#1c1209] rounded-lg h-4 md:h-5 border border-[#3e2e22] overflow-hidden p-0.5 relative flex items-center">
+                            <div id="load-bar" class="bg-gradient-to-r from-amber-500 to-pink-400 h-full rounded-md transition-all duration-200 ease-out" style="width: 0%"></div>
+                        </div>
+
+                        <!-- Real-time Status Console Messages -->
+                        <div id="status-checks" class="text-[10px] md:text-[11px] space-y-1 font-mono text-[#ecd0b9] h-16 md:h-20 overflow-hidden relative">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Finalized Beautiful Success Forecast Output Screen -->
+                    <div id="state-success" class="hidden space-y-2 md:space-y-3 pt-1">
+                        <div class="text-center border-b border-dashed border-[#543b27] pb-2">
+                            <h4 class="text-emerald-400 text-xs md:text-sm font-bold tracking-widest uppercase">🌨️ SUCCESS FORECAST 🌨️</h4>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-y-1 text-[11px] md:text-xs mt-1">
+                            <span class="text-amber-200 font-semibold">Confidence:</span>
+                            <span class="text-right text-emerald-300 font-bold">100% Guaranteed</span>
+
+                            <span class="text-amber-200 font-semibold">Effort Rating:</span>
+                            <span class="text-right text-emerald-300 font-bold">100% Certified</span>
+
+                            <span class="text-amber-200 font-semibold">Luck Multiplier:</span>
+                            <span class="text-right text-pink-300 font-bold">+999 Infinity</span>
+
+                            <span class="text-amber-200 font-semibold">Final Forecast:</span>
+                            <span class="text-right text-white font-bold bg-[#4c3c31] px-1 py-0.5 rounded border border-[#6b584b] text-[10px] md:text-xs">YOU GOT THIS.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer scanlines/flicker indicators -->
+                <div class="text-[9px] md:text-[10px] text-center text-[#9c7857] mt-3 pt-2 border-t border-[#3e2e22] flex justify-between items-center">
+                    <span>LOOP BACK SYSTEM</span>
+                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                </div>
+            </div>
+        </section>
+
+        
+        <!-- RIGHT SIDE: TRACK NOTE + DAILY QUOTE -->
+        <section class="lg:col-span-7 w-full relative px-1 max-w-xl mx-auto">
+            <div class="w-full bg-[#fbf9f4] rounded-xl shadow-2xl p-5 md:p-8 border border-[#e1d5c9] relative transform transition-all duration-300 ">
+                <div class="w-full relative">
+                    <div class="text-[#8c6b53] font-['Courier_Prime'] text-[9px] md:text-xs mb-4 md:mb-6">
+                        <p class="font-bold">DAILY NOTE</p>
+                        <p class="text-[10px] mt-1">A small dose of quiet encouragement for your study session.</p>
+                    </div>
+
+                    <div class="paper-lines p-6 rounded-3xl bg-[#fff8f0] text-[#3d2f21] font-['Caveat'] text-lg md:text-xl leading-relaxed shadow-sm space-y-5">
+                        <div class="text-sm uppercase tracking-widest text-[#8c6b53] font-['Courier_Prime']">Track note</div>
+                        <p>A small reminder that your best days are ahead — one step, one page, one exam at a time.</p>
+                        <div class="text-xs text-[#7b6a54] uppercase tracking-[0.2em] font-semibold">Daily quote</div>
+                        <blockquote class="text-xl md:text-2xl font-['Caveat'] italic text-[#4a3b2c]">“The future belongs to those who believe in the beauty of their dreams.”</blockquote>
+                        <p class="text-right text-sm md:text-base font-semibold text-[#8c6b53]">— Eleanor Roosevelt</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    <!-- Footnotes footer page info -->
+    <footer class="w-full text-center mt-6 text-[9px] md:text-[10px] font-['Courier_Prime'] text-[#8c6b53] tracking-widest uppercase z-10 px-4">
+        <p class="inline-block whitespace-nowrap">Made for study breaks • Take a deep breath & relax</p>
+    </footer>
+
+    <script>
+        let soundEnabled = true; // Audio is enabled by default now
+        let playInterval = null;
+        let isPaused = false;
+        let currentProgress = 0;
+        let statusMessagesTriggered = [];
+        let noteSpawnInterval = null;
+
+        // References to our Audio Player
+        const audioPlayer = document.getElementById("bg-music");
+
+        // Volume control wiring
+        const volumeSlider = document.getElementById('volumeSlider');
+        // Initialize volume from localStorage or default
+        try {
+            const saved = localStorage.getItem('bgVolume');
+            audioPlayer.volume = saved !== null ? parseFloat(saved) : 0.6;
+            if (volumeSlider) volumeSlider.value = audioPlayer.volume;
+        } catch (e) {
+            audioPlayer.volume = 0.6;
+        }
+
+        if (volumeSlider) {
+            volumeSlider.addEventListener('input', (e) => {
+                const v = parseFloat(e.target.value);
+                audioPlayer.volume = v;
+                try { localStorage.setItem('bgVolume', String(v)); } catch (err) {}
+            });
+        }
+
+        // Interactive checkpoints to render in real-time onto the screen terminal
+        const checklist = [
+            { threshold: 15, text: "Checking memory retention... ✓" },
+            { threshold: 40, text: "Review sessions detected... ✓" },
+            { threshold: 65, text: "Hard work detected... ✓" },
+            { threshold: 88, text: "Panic levels acceptable... ✓" }
+        ];
+
+        // Initialize sparkles and play music automatically if permitted on user action
+        window.onload = function () {
+            if (document.getElementById("sparkle-container")) {
+                startFloatingSparkles();
+            }
+        };
+
+        // Spawns cosmetic visual lofi musical notes rising from cassette tape
+        function startFloatingNotes() {
+            if (noteSpawnInterval) clearInterval(noteSpawnInterval);
+            const cassette = document.getElementById("cassette-body");
+
+            noteSpawnInterval = setInterval(() => {
+                if (isPaused) return;
+                const noteSymbols = ["🎵", "🎶", "♩", "♪", "♫", "✨"];
+                const element = document.createElement("div");
+                element.className = "floating-note";
+                
+                const randomNote = noteSymbols[Math.floor(Math.random() * noteSymbols.length)];
+                element.innerText = randomNote;
+
+                // Randomizing drift styles
+                const randomLeft = 20 + Math.random() * 60;
+                const driftX = -30 + Math.random() * 60;
+                const rot = -45 + Math.random() * 90;
+
+                element.style.left = `${randomLeft}%`;
+                element.style.bottom = "20%";
+                element.style.setProperty("--drift-x", `${driftX}px`);
+                element.style.setProperty("--rot", `${rot}deg`);
+
+                cassette.appendChild(element);
+
+                setTimeout(() => {
+                    element.remove();
+                }, 4000);
+            }, 900);
+        }
+
+        function stopFloatingNotes() {
+            if (noteSpawnInterval) {
+                clearInterval(noteSpawnInterval);
+                noteSpawnInterval = null;
+            }
+        }
+
+        // Redirects the cassette click control to the next cassette page
+        function goToNextCassette() {
+            window.location.href = "./track3.html";
+        }
+
+        // Activates tape player and loads success diagnostics
+        function startLoadingSequence() {
+            if (playInterval) return; // Prevent duplicate active instances
+
+            // Set state variables
+            isPaused = false;
+            
+            // Highlight player and update reels class
+            document.getElementById("left-reel").classList.add("reels-spinning");
+            document.getElementById("right-reel").classList.add("reels-spinning");
+            document.getElementById("record-light").classList.add("animate-pulse");
+
+            // Setup display states
+            document.getElementById("state-idle").classList.add("hidden");
+            document.getElementById("state-success").classList.add("hidden");
+            document.getElementById("state-loading").classList.remove("hidden");
+
+            // Toggle play/stop/pause physical button visibility
+            document.getElementById("btn-play").classList.add("opacity-50", "cursor-not-allowed");
+            document.getElementById("btn-play").disabled = true;
+            document.getElementById("btn-stop").classList.remove("opacity-50", "cursor-not-allowed");
+            document.getElementById("btn-stop").disabled = false;
+            document.getElementById("btn-pause").classList.remove("opacity-50", "cursor-not-allowed");
+            document.getElementById("btn-pause").disabled = false;
+
+            // Trigger actual audio player
+            if (soundEnabled) {
+                audioPlayer.play().catch(err => console.log("Audio load sequence trigger warning: ", err));
+            }
+            startFloatingNotes();
+
+            // Core interval generator driving progress loop
+            playInterval = setInterval(() => {
+                if (isPaused) return;
+
+                currentProgress += 1;
+                document.getElementById("load-percent").innerText = `${currentProgress}%`;
+                document.getElementById("load-bar").style.width = `${currentProgress}%`;
+
+                // Verify and render dynamic checkpoint messages
+                checklist.forEach(checkpoint => {
+                    if (currentProgress >= checkpoint.threshold && !statusMessagesTriggered.includes(checkpoint.text)) {
+                        statusMessagesTriggered.push(checkpoint.text);
+                        appendStatusMessage(checkpoint.text);
+                    }
+                });
+
+                // Completed Loading Sequence
+                if (currentProgress >= 100) {
+                    clearInterval(playInterval);
+                    playInterval = null;
+                    completeLoading();
+                }
+            }, 80);
+        }
+
+        // Toggles pause mode
+        function togglePause() {
+            if (!playInterval) return;
+            isPaused = !isPaused;
+
+            const pauseBtn = document.getElementById("btn-pause");
+
+            if (isPaused) {
+                document.getElementById("left-reel").classList.remove("reels-spinning");
+                document.getElementById("right-reel").classList.remove("reels-spinning");
+                pauseBtn.classList.add("bg-amber-100", "border-amber-400");
+                
+                audioPlayer.pause();
+                stopFloatingNotes();
+            } else {
+                document.getElementById("left-reel").classList.add("reels-spinning");
+                document.getElementById("right-reel").classList.add("reels-spinning");
+                pauseBtn.classList.remove("bg-amber-100", "border-amber-400");
+                
+                if (soundEnabled) {
+                    audioPlayer.play().catch(err => console.log(err));
+                }
+                startFloatingNotes();
+            }
+        }
+
+        // Fully stops sequence progress tracking & loops
+        function stopLoadingSequence() {
+            if (playInterval) {
+                clearInterval(playInterval);
+                playInterval = null;
+            }
+
+            isPaused = false;
+            currentProgress = 0;
+            statusMessagesTriggered = [];
+
+            // Reset visual states
+            document.getElementById("left-reel").classList.remove("reels-spinning", "reels-spinning-fast");
+            document.getElementById("right-reel").classList.remove("reels-spinning", "reels-spinning-fast");
+            document.getElementById("record-light").classList.remove("animate-pulse");
+
+            document.getElementById("state-idle").classList.remove("hidden");
+            document.getElementById("state-success").classList.add("hidden");
+            document.getElementById("state-loading").classList.add("hidden");
+
+            document.getElementById("btn-play").classList.remove("opacity-50", "cursor-not-allowed");
+            document.getElementById("btn-play").disabled = false;
+            document.getElementById("btn-stop").classList.add("opacity-50", "cursor-not-allowed");
+            document.getElementById("btn-stop").disabled = true;
+            document.getElementById("btn-pause").classList.add("opacity-50", "cursor-not-allowed");
+            document.getElementById("btn-pause").disabled = true;
+            document.getElementById("btn-pause").classList.remove("bg-amber-100", "border-amber-400");
+
+            // Empty live logging div
+            document.getElementById("status-checks").innerHTML = "";
+
+            // Pause the music track and reset it
+            audioPlayer.pause();
+            audioPlayer.currentTime = 0;
+            stopFloatingNotes();
+        }
+
+        // Appends dynamic check alerts to screen
+        function appendStatusMessage(text) {
+            const container = document.getElementById("status-checks");
+            const log = document.createElement("p");
+            log.className = "text-[#ffdcb3] flex items-center space-x-1 animate-pulse";
+            log.innerHTML = `<span class="text-amber-400">➜</span> <span>${text}</span>`;
+            container.appendChild(log);
+            
+            // Auto scroll console terminal
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Displays final successful forecast card block
+        function completeLoading() {
+            document.getElementById("state-loading").classList.add("hidden");
+            document.getElementById("state-success").classList.remove("hidden");
+
+            // Fast spin reels for finish high
+            document.getElementById("left-reel").classList.remove("reels-spinning");
+            document.getElementById("right-reel").classList.remove("reels-spinning");
+            document.getElementById("left-reel").classList.add("reels-spinning-fast");
+            document.getElementById("right-reel").classList.add("reels-spinning-fast");
+
+            // Emit massive beautiful sparkle shower
+            burstSparkles(30);
+        }
+
+        // Custom Sparkles Particle Engine
+        function startFloatingSparkles() {
+            const container = document.getElementById("sparkle-container");
+            const colors = ["#fbcfe8", "#fef3c7", "#fdf6e2", "#fcd34d", "#f472b6"];
+
+            setInterval(() => {
+                if (document.hidden) return;
+                const sparkle = document.createElement("div");
+                sparkle.className = "sparkle-particle";
+                
+                // Select random starry character
+                const chars = ["★", "✨", "✦", "✧", "♥"];
+                sparkle.innerText = chars[Math.floor(Math.random() * chars.length)];
+                sparkle.style.color = colors[Math.floor(Math.random() * colors.length)];
+                
+                const size = 10 + Math.random() * 16;
+                sparkle.style.fontSize = `${size}px`;
+                
+                const leftPos = Math.random() * 100;
+                sparkle.style.left = `${leftPos}vw`;
+                
+                const drift = -150 + Math.random() * 300;
+                sparkle.style.setProperty("--drift", `${drift}px`);
+                
+                const duration = 6 + Math.random() * 6;
+                sparkle.style.animationDuration = `${duration}s`;
+
+                container.appendChild(sparkle);
+
+                setTimeout(() => {
+                    sparkle.remove();
+                }, duration * 1000);
+            }, 1200);
+        }
+
+        function burstSparkles(count) {
+            const container = document.getElementById("sparkle-container");
+            const colors = ["#fbcfe8", "#fef3c7", "#fcd34d", "#f472b6"];
+
+            for (let i = 0; i < count; i++) {
+                const sparkle = document.createElement("div");
+                sparkle.className = "sparkle-particle";
+                sparkle.innerText = "✨";
+                sparkle.style.color = colors[Math.floor(Math.random() * colors.length)];
+                
+                const size = 12 + Math.random() * 18;
+                sparkle.style.fontSize = `${size}px`;
+                
+                const leftPos = Math.random() * 100;
+                sparkle.style.left = `${leftPos}vw`;
+                
+                const drift = -200 + Math.random() * 400;
+                sparkle.style.setProperty("--drift", `${drift}px`);
+                
+                const duration = 3 + Math.random() * 4;
+                sparkle.style.animationDuration = `${duration}s`;
+
+                container.appendChild(sparkle);
+
+                setTimeout(() => {
+                    sparkle.remove();
+                }, duration * 1000);
+            }
+        }
+    </script>
+</body>
+</html>

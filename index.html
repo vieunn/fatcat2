@@ -282,13 +282,13 @@
                         <span class="text-[9px] md:text-[10px] font-bold mt-1 uppercase tracking-wider font-mono">Stop</span>
                     </button>
 
-                    <button id="btn-sound" onclick="toggleSoundEnable()" class="bg-[#ebdcc9] hover:bg-[#ebdcc9]/90 border-b-4 border-r-2 border-[#a69584] active:border-b-0 active:border-r-0 active:translate-y-[4px] active:translate-x-[2px] transition-all rounded py-2.5 px-1 flex flex-col items-center justify-center text-[#5c4738] bg-emerald-100 border-emerald-400">
-                        <span id="sound-icon-wrapper" class="text-emerald-700">
+                    <button id="btn-click" onclick="goToNextCassette()" class="bg-[#ebdcc9] hover:bg-[#ebdcc9]/90 border-b-4 border-r-2 border-[#a69584] active:border-b-0 active:border-r-0 active:translate-y-[4px] active:translate-x-[2px] transition-all rounded py-2.5 px-1 flex flex-col items-center justify-center text-[#5c4738] bg-emerald-100 border-emerald-400">
+                        <span id="click-icon-wrapper" class="text-emerald-700">
                             <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M7 11l5-5 5 5M12 6v12"/>
                             </svg>
                         </span>
-                        <span class="text-[9px] md:text-[10px] font-bold mt-1 uppercase tracking-wider font-mono">Audio</span>
+                        <span class="text-[9px] md:text-[10px] font-bold mt-1 uppercase tracking-wider font-mono">Click</span>
                     </button>
                 </div>
             </div>
@@ -518,35 +518,9 @@
             }
         }
 
-        // Toggles local audio accessibility option
-        function toggleSoundEnable() {
-            soundEnabled = !soundEnabled;
-            const soundBtn = document.getElementById("btn-sound");
-            const soundIconWrapper = document.getElementById("sound-icon-wrapper");
-
-            if (soundEnabled) {
-                // Active Sound visual style button
-                soundBtn.classList.add("bg-emerald-100", "border-emerald-400");
-                soundIconWrapper.innerHTML = `
-                    <svg class="w-4 h-4 md:w-5 md:h-5 text-emerald-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z"/>
-                    </svg>
-                `;
-                
-                // If tape deck is playing, resume audio playback
-                if (playInterval && !isPaused) {
-                    audioPlayer.play().catch(err => console.log("Audio play blocked until gesture: ", err));
-                }
-            } else {
-                soundBtn.classList.remove("bg-emerald-100", "border-emerald-400");
-                soundIconWrapper.innerHTML = `
-                    <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 9.75L19.5 12m0 0l2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-6L4.5 9H1.5v6h3l4.5 3.75V5.25z"/>
-                    </svg>
-                `;
-                // Mute/pause audio
-                audioPlayer.pause();
-            }
+        // Redirects the cassette click control to the next cassette page
+        function goToNextCassette() {
+            window.location.href = "./track2.html";
         }
 
         // Activates tape player and loads success diagnostics
